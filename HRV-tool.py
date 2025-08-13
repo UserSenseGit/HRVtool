@@ -20,6 +20,24 @@ if uploaded_file:
     except:
         st.error("Kon de gegevens niet omzetten naar numerieke R-R intervallen.")
         st.stop()
+   
+   # Bereken BPM van volledige reeks
+    full_hr = 60000 / rr_intervals
+
+    # Slider voor maximale BPM (threshold)
+    bpm_threshold = st.slider(
+        "Maximale BPM (waarden boven deze drempel worden genegeerd)",
+        min_value=int(np.min(full_hr)),
+        max_value=int(np.max(full_hr)),
+        value=int(np.max(full_hr)),
+        step=1
+    )
+
+    # Filter R-R en BPM op basis van BPM threshold
+    mask = full_hr <= bpm_threshold
+    rr_intervals = rr_intervals[mask]
+    full_hr = full_hr[mask]
+    
 
     full_hr = 60000 / rr_intervals
 
@@ -126,3 +144,4 @@ if uploaded_file:
 
             combined_hr = 60000 / combined
             st.line_chart(combined_hr, height=250, use_container_width=True)
+
